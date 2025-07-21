@@ -13,7 +13,7 @@ const supabase = createBrowserClient(
 interface UserData {
   id: string
   email: string
-  user_metadata?: any
+  user_metadata?: Record<string, unknown>
   email_confirmed_at?: string
   last_sign_in_at?: string
 }
@@ -224,7 +224,7 @@ export default function HomePage() {
           <div className="flex items-center space-x-4">
             <div className="text-right">
               <div className="text-sm font-medium text-gray-900">
-                {user.user_metadata?.full_name || 'Admin'}
+                {user.user_metadata?.full_name as string || 'Admin'}
               </div>
               <div className="text-xs text-gray-500">{user.email}</div>
               <div className="text-xs text-green-600">✅ Conectado via Supabase</div>
