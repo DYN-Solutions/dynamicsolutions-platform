@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from 'react'
 import { signInWithEmail } from '@/Lib/supabase'
 
@@ -15,14 +14,14 @@ export function LoginForm() {
     setError('')
 
     try {
-      const { data, error } = await signInWithEmail(email, password)
+      const { error } = await signInWithEmail(email, password)
       
       if (error) {
         setError('Email ou senha incorretos')
       } else {
         window.location.reload()
       }
-    } catch (err) {
+    } catch {
       setError('Erro ao fazer login')
     } finally {
       setLoading(false)
@@ -40,14 +39,12 @@ export function LoginForm() {
             Faça login na sua conta
           </p>
         </div>
-
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
               {error}
             </div>
           )}
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               E-mail
@@ -61,7 +58,6 @@ export function LoginForm() {
               placeholder="seu@email.com"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Senha
@@ -75,7 +71,6 @@ export function LoginForm() {
               placeholder="••••••••"
             />
           </div>
-
           <button
             type="submit"
             disabled={loading}
@@ -83,7 +78,6 @@ export function LoginForm() {
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
-
           <div className="text-center text-sm text-gray-600">
             <p>Credenciais de teste:</p>
             <p>Email: herison@dynamicsolutions.digital</p>
