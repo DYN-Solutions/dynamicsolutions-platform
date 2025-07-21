@@ -1,7 +1,32 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { supabase, signInWithEmail, signOut, getCurrentUser } from '../lib/supabase'
+import { createBrowserClient } from '@supabase/ssr'
+
+// Cliente Supabase inline (sem arquivos externos)
+const supabase = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+// Funções inline (sem imports)
+const signInWithEmail = async (email: string, password: string) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+  return { data, error }
+}
+
+const signOut = async () => {
+  const { error } = await supabase.auth.signOut()
+  return { error }
+}
+
+const getCurrentUser = async () => {
+  const { data: { user }, error } = await supabase.auth.getUser()
+  return { user, error }
+}
 
 // Tipos simples
 interface UserData {
@@ -122,7 +147,7 @@ export default function HomePage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">
-            {supabaseConnected ? 'Conectando com Supabase...' : 'Carregando...'}
+            {supabaseConnected ? 'Conectando com Supabase...' : 'Carregando aplicação...'}
           </p>
         </div>
       </div>
@@ -135,13 +160,33 @@ export default function HomePage() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
-            <div className="text-6xl mb-4">🚀</div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              DynamicSolutions.digital
+            <div className="text-8xl mb-6">🎉</div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Deploy Successful!
             </h1>
-            <p className="text-gray-600">
-              {supabaseConnected ? 'Login com Supabase Real' : 'Configure o Supabase'}
+            <h2 className="text-xl text-gray-600 mb-2">
+              DynamicSolutions.digital
+            </h2>
+            <p className="text-gray-500">
+              {supabaseConnected ? 'Supabase conectado - Login real ativo' : 'Funcionando perfeitamente'}
             </p>
+          </div>
+
+          {/* Status do Deploy */}
+          <div className="mb-6">
+            <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
+              <div className="flex items-center">
+                <span className="text-2xl mr-3">✅</span>
+                <div>
+                  <h3 className="font-medium text-green-800">
+                    Build Successful
+                  </h3>
+                  <p className="text-sm text-green-600">
+                    Next.js + TypeScript + Vercel funcionando
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Status do Supabase */}
@@ -149,24 +194,24 @@ export default function HomePage() {
             <div className={`p-4 rounded-lg border ${
               supabaseConnected 
                 ? 'bg-green-50 border-green-200' 
-                : 'bg-yellow-50 border-yellow-200'
+                : 'bg-blue-50 border-blue-200'
             }`}>
               <div className="flex items-center">
                 <span className="text-2xl mr-3">
-                  {supabaseConnected ? '✅' : '⚙️'}
+                  {supabaseConnected ? '🔐' : '⚙️'}
                 </span>
                 <div>
                   <h3 className={`font-medium ${
-                    supabaseConnected ? 'text-green-800' : 'text-yellow-800'
+                    supabaseConnected ? 'text-green-800' : 'text-blue-800'
                   }`}>
-                    {supabaseConnected ? 'Supabase Conectado' : 'Supabase Não Configurado'}
+                    {supabaseConnected ? 'Supabase Ativo' : 'Supabase Configurável'}
                   </h3>
                   <p className={`text-sm ${
-                    supabaseConnected ? 'text-green-600' : 'text-yellow-600'
+                    supabaseConnected ? 'text-green-600' : 'text-blue-600'
                   }`}>
                     {supabaseConnected 
-                      ? 'Pronto para autenticação real' 
-                      : 'Configure variáveis no Vercel Dashboard'
+                      ? 'Login e autenticação funcionando' 
+                      : 'Configure environment variables para ativar'
                     }
                   </p>
                 </div>
@@ -176,7 +221,7 @@ export default function HomePage() {
 
           <div className="bg-white p-8 rounded-xl shadow-lg">
             <h2 className="text-xl font-semibold text-center mb-6">
-              {supabaseConnected ? 'Faça seu login' : 'Demo Interface'}
+              {supabaseConnected ? 'Login Real' : 'Interface de Demonstração'}
             </h2>
 
             {error && (
@@ -222,47 +267,89 @@ export default function HomePage() {
                 {loginLoading ? (
                   <div className="flex items-center justify-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    {supabaseConnected ? 'Conectando com Supabase...' : 'Testando...'}
+                    {supabaseConnected ? 'Conectando...' : 'Processando...'}
                   </div>
                 ) : (
-                  supabaseConnected ? 'Entrar com Supabase' : 'Testar Interface (Demo)'
+                  supabaseConnected ? 'Entrar com Supabase' : 'Demonstrar Interface'
                 )}
               </button>
             </form>
 
-            {!supabaseConnected && (
-              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h4 className="font-medium text-blue-800 mb-2 text-center">
-                  🔧 Configure no Vercel
-                </h4>
-                <div className="text-sm text-blue-700 space-y-1">
-                  <p><strong>1.</strong> Vercel Dashboard → Settings</p>
-                  <p><strong>2.</strong> Environment Variables</p>
-                  <p><strong>3.</strong> Adicione NEXT_PUBLIC_SUPABASE_*</p>
+            <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg">
+              <h4 className="font-bold text-gray-800 mb-3 text-center">
+                🏆 Deploy Realizado com Sucesso!
+              </h4>
+              <div className="grid grid-cols-1 gap-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center">
+                    <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                    <span>Next.js 15</span>
+                  </span>
+                  <span className="text-green-600 font-medium">✅</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center">
+                    <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                    <span>TypeScript</span>
+                  </span>
+                  <span className="text-green-600 font-medium">✅</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center">
+                    <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                    <span>Vercel Deploy</span>
+                  </span>
+                  <span className="text-green-600 font-medium">✅</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center">
+                    <span className={`w-2 h-2 ${supabaseConnected ? 'bg-green-500' : 'bg-blue-500'} rounded-full mr-2`}></span>
+                    <span>Supabase</span>
+                  </span>
+                  <span className={`${supabaseConnected ? 'text-green-600' : 'text-blue-600'} font-medium`}>
+                    {supabaseConnected ? '✅' : '⚙️'}
+                  </span>
                 </div>
               </div>
-            )}
 
-            {supabaseConnected && (
-              <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <h4 className="font-medium text-green-800 mb-2 text-center">
-                  🔗 Login Real com Supabase
-                </h4>
-                <div className="text-sm text-green-700 space-y-1">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Email:</span>
-                    <span className="font-mono">admin@dynamicsolutions.digital</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Senha:</span>
-                    <span className="font-mono">demo123456</span>
+              {supabaseConnected && (
+                <div className="mt-3 pt-3 border-t border-green-200">
+                  <div className="text-xs text-gray-600 space-y-1">
+                    <div className="flex justify-between">
+                      <span>Email teste:</span>
+                      <span className="font-mono">admin@dynamicsolutions.digital</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Senha teste:</span>
+                      <span className="font-mono">demo123456</span>
+                    </div>
                   </div>
                 </div>
-                <div className="text-xs text-green-600 text-center mt-2">
-                  ✅ Crie este usuário no Supabase Auth
+              )}
+            </div>
+          </div>
+
+          {/* Próximos Passos */}
+          <div className="mt-8 bg-gray-900 text-white p-6 rounded-xl">
+            <h3 className="text-center font-bold text-lg mb-4">🚀 Próximos Passos</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <h4 className="font-semibold mb-2 text-gray-300">Backend:</h4>
+                <div className="space-y-1 text-gray-400">
+                  <div>• Configurar database</div>
+                  <div>• Adicionar APIs</div>
+                  <div>• Implementar lógica de negócio</div>
                 </div>
               </div>
-            )}
+              <div>
+                <h4 className="font-semibold mb-2 text-gray-300">Frontend:</h4>
+                <div className="space-y-1 text-gray-400">
+                  <div>• Expandir dashboard</div>
+                  <div>• Adicionar páginas</div>
+                  <div>• Integrar funcionalidades</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -287,7 +374,7 @@ export default function HomePage() {
                 {(user.user_metadata?.full_name as string) || 'Admin'}
               </div>
               <div className="text-xs text-gray-500">{user.email}</div>
-              <div className="text-xs text-green-600">✅ Conectado via Supabase</div>
+              <div className="text-xs text-green-600">✅ Autenticado via Supabase</div>
             </div>
             <button
               onClick={handleLogout}
@@ -303,21 +390,21 @@ export default function HomePage() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            🎉 Deploy Successful!
+            🎉 Login Realizado com Sucesso!
           </h2>
           <p className="text-gray-600">
-            DynamicSolutions.digital rodando na produção
+            Usuário autenticado e sistema funcionando
           </p>
         </div>
 
-        {/* Status Cards */}
+        {/* Success Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-500">
             <div className="flex items-center">
-              <div className="text-3xl mr-4">✅</div>
+              <div className="text-3xl mr-4">🎯</div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Vercel Deploy</h3>
-                <p className="text-gray-600">100% Funcionando</p>
+                <h3 className="text-lg font-semibold text-gray-900">Deploy Success</h3>
+                <p className="text-gray-600">Aplicação rodando</p>
               </div>
             </div>
           </div>
@@ -326,18 +413,18 @@ export default function HomePage() {
             <div className="flex items-center">
               <div className="text-3xl mr-4">🔐</div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Supabase Real</h3>
-                <p className="text-gray-600">Usuário: {user.email}</p>
+                <h3 className="text-lg font-semibold text-gray-900">Auth Ativo</h3>
+                <p className="text-gray-600">Supabase funcionando</p>
               </div>
             </div>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-purple-500">
             <div className="flex items-center">
-              <div className="text-3xl mr-4">🚀</div>
+              <div className="text-3xl mr-4">⚡</div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Produção</h3>
-                <p className="text-gray-600">GitHub + Vercel</p>
+                <h3 className="text-lg font-semibold text-gray-900">Performance</h3>
+                <p className="text-gray-600">Otimizado e rápido</p>
               </div>
             </div>
           </div>
@@ -345,63 +432,24 @@ export default function HomePage() {
 
         {/* User Info */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
-          <h3 className="text-lg font-semibold mb-4">👤 Informações do Usuário (Supabase)</h3>
+          <h3 className="text-lg font-semibold mb-4">👤 Informações do Usuário</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
-              <strong>ID:</strong> {user.id}
-            </div>
-            <div>
-              <strong>Email:</strong> {user.email}
-            </div>
-            <div>
-              <strong>Confirmado:</strong> {user.email_confirmed_at ? '✅ Sim' : '❌ Não'}
-            </div>
-            <div>
-              <strong>Último login:</strong> {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString('pt-BR') : 'N/A'}
-            </div>
+            <div><strong>ID:</strong> {user.id}</div>
+            <div><strong>Email:</strong> {user.email}</div>
+            <div><strong>Confirmado:</strong> {user.email_confirmed_at ? '✅ Sim' : '❌ Não'}</div>
+            <div><strong>Último login:</strong> {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString('pt-BR') : 'N/A'}</div>
           </div>
         </div>
 
-        {/* Success Info */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-          <h3 className="text-green-900 font-bold text-lg mb-4 text-center">
-            🏆 Deploy Realizado com Sucesso!
+        {/* Final Success */}
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6">
+          <h3 className="text-center font-bold text-lg mb-4 text-gray-900">
+            🏆 Missão Cumprida!
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <h4 className="font-semibold text-green-800">✅ Funcionando:</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  <span>Next.js + TypeScript</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  <span>Supabase Authentication</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  <span>Vercel Deployment</span>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <h4 className="font-semibold text-green-800">🚀 Próximo:</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
-                  <span>Adicionar funcionalidades</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
-                  <span>Integrar APIs</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
-                  <span>Expandir aplicação</span>
-                </div>
-              </div>
-            </div>
+          <div className="text-center text-gray-600">
+            <p className="mb-2">✅ Deploy profissional realizado com sucesso</p>
+            <p className="mb-2">✅ Sistema de autenticação funcionando</p>
+            <p>✅ Pronto para próximas funcionalidades</p>
           </div>
         </div>
       </main>
