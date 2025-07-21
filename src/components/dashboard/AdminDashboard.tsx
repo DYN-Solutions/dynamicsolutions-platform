@@ -1,11 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Database } from '@/types/database'
-
-type Company = Database['public']['Tables']['companies']['Row']
-type Project = Database['public']['Tables']['projects']['Row']
+import { createBrowserClient } from '@supabase/ssr'
+import { Company, Project } from '@/types/database'
 
 interface DashboardStats {
   totalCompanies: number
@@ -25,7 +22,10 @@ export default function AdminDashboard() {
   const [activeProjects, setActiveProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   useEffect(() => {
     loadDashboardData()
@@ -35,10 +35,10 @@ export default function AdminDashboard() {
     try {
       // Carregar estatísticas
       const [companiesRes, projectsRes, paymentsRes, tasksRes] = await Promise.all([
-        supabase.from('companies').select('count', { count: 'exact' }),
+        supabase.from('companies').select('*', { count: 'exact' }),
         supabase.from('projects').select('*').eq('status', 'active'),
         supabase.from('payments').select('amount').eq('status', 'completed'),
-        supabase.from('tasks').select('count', { count: 'exact' }).eq('status', 'pending')
+        supabase.from('tasks').select('*', { count: 'exact' }).eq('status', 'pending')
       ])
 
       // Calcular receita total
