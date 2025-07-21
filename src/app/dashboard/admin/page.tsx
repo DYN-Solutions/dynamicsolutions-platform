@@ -2,16 +2,15 @@ import AdminDashboard from '@/components/dashboard/AdminDashboard'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { Database } from '@/types/database'
 
 export default async function AdminDashboardPage() {
-  const supabase = createServerComponentClient<Database>({ cookies })
+  const supabase = createServerComponentClient({ cookies })
   
   // Verificar autenticação e role
   const { data: { session } } = await supabase.auth.getSession()
   
   if (!session) {
-    redirect('/login')
+    redirect('/')
   }
 
   // Verificar se é admin
@@ -22,7 +21,7 @@ export default async function AdminDashboardPage() {
     .single()
 
   if (user?.role !== 'admin') {
-    redirect('/dashboard/client')
+    redirect('/dashboard')
   }
 
   return (
