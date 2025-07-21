@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { supabase, signInWithEmail, signOut, getCurrentUser } from '@/lib/supabase'
+import { supabase, signInWithEmail, signOut, getCurrentUser } from '../lib/supabase'
 
 // Tipos simples
 interface UserData {
@@ -81,7 +81,7 @@ export default function HomePage() {
     setError('')
 
     if (!supabaseConnected) {
-      setError('🔧 Configure as variáveis do Supabase no arquivo .env.local')
+      setError('🔧 Configure as variáveis do Supabase no Vercel Dashboard')
       setLoginLoading(false)
       return
     }
@@ -166,7 +166,7 @@ export default function HomePage() {
                   }`}>
                     {supabaseConnected 
                       ? 'Pronto para autenticação real' 
-                      : 'Configure .env.local com suas credenciais'
+                      : 'Configure variáveis no Vercel Dashboard'
                     }
                   </p>
                 </div>
@@ -233,12 +233,12 @@ export default function HomePage() {
             {!supabaseConnected && (
               <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <h4 className="font-medium text-blue-800 mb-2 text-center">
-                  🔧 Configure o Supabase
+                  🔧 Configure no Vercel
                 </h4>
                 <div className="text-sm text-blue-700 space-y-1">
-                  <p><strong>1.</strong> Crie arquivo <code>.env.local</code> na raiz</p>
-                  <p><strong>2.</strong> Adicione suas credenciais Supabase</p>
-                  <p><strong>3.</strong> Reinicie o servidor de desenvolvimento</p>
+                  <p><strong>1.</strong> Vercel Dashboard → Settings</p>
+                  <p><strong>2.</strong> Environment Variables</p>
+                  <p><strong>3.</strong> Adicione NEXT_PUBLIC_SUPABASE_*</p>
                 </div>
               </div>
             )}
@@ -303,10 +303,10 @@ export default function HomePage() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            🎉 Conectado com Supabase!
+            🎉 Deploy Successful!
           </h2>
           <p className="text-gray-600">
-            Autenticação real funcionando perfeitamente
+            DynamicSolutions.digital rodando na produção
           </p>
         </div>
 
@@ -316,8 +316,8 @@ export default function HomePage() {
             <div className="flex items-center">
               <div className="text-3xl mr-4">✅</div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Supabase Conectado</h3>
-                <p className="text-gray-600">Autenticação real ativa</p>
+                <h3 className="text-lg font-semibold text-gray-900">Vercel Deploy</h3>
+                <p className="text-gray-600">100% Funcionando</p>
               </div>
             </div>
           </div>
@@ -326,7 +326,7 @@ export default function HomePage() {
             <div className="flex items-center">
               <div className="text-3xl mr-4">🔐</div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Login Real</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Supabase Real</h3>
                 <p className="text-gray-600">Usuário: {user.email}</p>
               </div>
             </div>
@@ -336,8 +336,8 @@ export default function HomePage() {
             <div className="flex items-center">
               <div className="text-3xl mr-4">🚀</div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Deploy Successful</h3>
-                <p className="text-gray-600">Vercel + GitHub</p>
+                <h3 className="text-lg font-semibold text-gray-900">Produção</h3>
+                <p className="text-gray-600">GitHub + Vercel</p>
               </div>
             </div>
           </div>
@@ -386,11 +386,11 @@ export default function HomePage() {
               </div>
             </div>
             <div className="space-y-3">
-              <h4 className="font-semibold text-green-800">🚀 Próximo Nível:</h4>
+              <h4 className="font-semibold text-green-800">🚀 Próximo:</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
-                  <span>Adicionar Dashboard</span>
+                  <span>Adicionar funcionalidades</span>
                 </div>
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
@@ -398,7 +398,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex items-center">
                   <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
-                  <span>Expandir funcionalidades</span>
+                  <span>Expandir aplicação</span>
                 </div>
               </div>
             </div>
