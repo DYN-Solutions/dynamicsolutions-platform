@@ -1,4 +1,4 @@
-// Tipos alinhados com SEU schema existente
+// Tipos baseados no SEU schema Supabase
 export interface User {
   id: string
   email: string
@@ -20,9 +20,6 @@ export interface Company {
   website?: string
   industry?: string
   size?: 'startup' | 'small' | 'medium' | 'large' | 'enterprise'
-  address?: Record<string, any>
-  billing_info?: Record<string, any>
-  settings?: Record<string, any>
   status: 'active' | 'inactive' | 'suspended'
   created_at: string
   updated_at: string
@@ -40,27 +37,15 @@ export interface Project {
   start_date?: string
   end_date?: string
   assigned_to?: string
-  settings?: Record<string, any>
   created_at: string
   updated_at: string
 }
 
-export interface Campaign {
+// Interface para dados básicos de auth (mantém compatibilidade atual)
+export interface UserData {
   id: string
-  project_id: string
-  ad_account_id: string
-  campaign_id: string
-  name: string
-  type: string
-  status: string
-  daily_budget?: number
-  lifetime_budget?: number
-  start_date?: string
-  end_date?: string
-  objective?: string
-  target_audience?: Record<string, any>
-  settings?: Record<string, any>
-  is_active: boolean
-  created_at: string
-  updated_at: string
+  email: string
+  user_metadata?: Record<string, unknown>
+  email_confirmed_at?: string
+  last_sign_in_at?: string
 }
