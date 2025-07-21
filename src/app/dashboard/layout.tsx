@@ -1,3 +1,4 @@
+import { LogoutButton } from '@/components/ui/LogoutButton'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -51,9 +52,7 @@ export default async function DashboardLayout({
             
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-400">{user?.full_name}</span>
-              <button className="text-sm bg-red-500/20 text-red-400 px-4 py-2 rounded-lg hover:bg-red-500/30 transition-colors">
-                Sair
-              </button>
+              <LogoutButton />
             </div>
           </div>
         </div>
