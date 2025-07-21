@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { signInWithEmail } from '@/lib/supabase'
+import { signInWithEmail } from '../../lib/supabase'
 
 export function LoginForm() {
   const [email, setEmail] = useState('')
